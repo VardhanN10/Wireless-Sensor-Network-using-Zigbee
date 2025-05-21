@@ -202,8 +202,8 @@ You should see the transient key listed, e.g.:
 Transient Key Table:
 66 B6 90 09 81 E1 EE 3C A4 20 6B 6B 86 1C 02 BB
 ```
-#### Step 2: Form the Centralized Network **With Security**
-On the Light (Coordinator):
+### Form the Centralized Network **With Security**
+### On the Light (Coordinator):
 ```
 plugin network-creator start 1
 ```
@@ -211,7 +211,7 @@ Then check the PAN ID of the network:
 ```
 network id
 ```
-#### Step 3: Open the Network to Allow Join
+####  Open the Network to Allow Join
 Still on the Light, use this command to allow the Switch (Router) to join:
 ```
 plugin network-creator-security open-with-key {<Switch EUI64>} {<Link Key>}
@@ -220,7 +220,7 @@ Example:
 ```
 plugin network-creator-security open-with-key {90 FD 9F FF FE 19 B1 FC} {66 B6 90 09 81 E1 EE 3C A4 20 6B 6B 86 1C 02 BB}
 ```
-#### Step 4: Join the Network on the Switch
+#### Join the Network on the Switch
 On the Switch (Router) console:
 ```
 plugin network-steering start 0
