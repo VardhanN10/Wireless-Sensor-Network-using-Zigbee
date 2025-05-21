@@ -65,5 +65,4 @@ Pull Requests are welcome!
 
 ---
 
-© 2025 — Developed in collaboration with **[Your Professor’s Name or Lab/Department]**  
-Maintained by **[Your Name]**
+
