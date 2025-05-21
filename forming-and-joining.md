@@ -137,16 +137,15 @@ Run the batch file via Command Prompt to flash the install code.
 
 ---
 
-## 🔐 Network Formation – Centralized (With and Without Security)
+##  4. Network Formation – Centralized (With and Without Security)
 
 After completing the initial setup of both Light (Coordinator) and Switch (Router) devices, you can now form a centralized Zigbee network in two ways:
 
-- ✅ **With Security** (Zigbee 3.0 standard-compliant, uses Install Codes and Link Keys)
-- 🔓 **Without Security** (faster setup, not recommended for production)
+- **With Security** (Zigbee 3.0 standard-compliant, uses Install Codes and Link Keys)
+-  **Without Security** (faster setup, not recommended for production)
 
 ---
-
-### 🔐 Forming a Centralized Network **With Security**
+### Derive a link key from the install code
 
 ####  Step 1: Derive Link Key from Install Code
 
@@ -203,7 +202,7 @@ You should see the transient key listed, e.g.:
 Transient Key Table:
 66 B6 90 09 81 E1 EE 3C A4 20 6B 6B 86 1C 02 BB
 ```
-#### Step 2: Form the Centralized Network
+#### Step 2: Form the Centralized Network **With Security**
 On the Light (Coordinator):
 ```
 plugin network-creator start 1
