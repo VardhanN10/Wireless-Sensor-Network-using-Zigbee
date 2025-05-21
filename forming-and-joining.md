@@ -181,19 +181,19 @@ Explanation:
 
 - {Install Code + CRC} is the 16-byte install code plus 2-byte CRC.
 
-How to find the CRC:
+#### How to find the CRC:
 
 After running your install_code.bat file (from the earlier setup), it shows the derived key and CRC.
 
 The CRC is displayed in little-endian format — reverse the two bytes to use in the CLI.
 
-Example:
+#### Example:
 
 CRC output: B5 C3 (little endian)
 
 Use as: C3 B5
 
-Verify the link key is added correctly by running on the Light (Coordinator):
+#### Verify the link key is added correctly by running on the Light (Coordinator):
 
 ```
 keys print
