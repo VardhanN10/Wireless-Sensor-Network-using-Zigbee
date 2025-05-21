@@ -145,5 +145,5 @@ You have now:
 - Verified and programmed the Install Code for secure joining
 
 Proceed to the next section:  
-Sending On/Off Commands
+[ Sending On/Off Commands](./sending-onoff-commands.md)
 
