@@ -64,10 +64,14 @@ Open **ZCL Configurator** and:
 
 This example is already configured as a Router.
 
-###  Step 2: Modify CLI Configuration
+###  Configure Software Components in `.slcp`
 
-- `Services > CLI - Global Configuration`  
-  → Set **Command Prompt name** to: `Switch`
+Install the following components:
+
+- `Zigbee - Common > Identify Feedback`
+- `Zigbee - Common > Reporting`
+- `Bluetooth - Application > Miscellaneous > Relative Humidity and Temperature Sensor`
+- `Zigbee - Zigbee 3.0  > Find and Bind Target`
 
 ###  Step 3: Configure ZCL Endpoint
 
