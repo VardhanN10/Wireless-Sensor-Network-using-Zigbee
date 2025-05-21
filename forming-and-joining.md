@@ -93,3 +93,57 @@ Run the following command with only the **Switch device** connected:
 
 ```bash
 C:\SiliconLabs\SimplicityStudio\v5\developer\adapter_packs\commander\commander.exe tokendump --tokengroup znet
+```
+If install code is present, you’ll see a valid token output
+
+If not, proceed to the next step
+
+## 🛠 4. Derive and Program Install Code
+
+Create a new batch file `install_code.bat` in the project directory with the following contents:
+
+```batch
+@echo off
+
+:: Automatic Installation Code Programming
+
+if "%PATH_SCMD%"=="" (
+  set COMMANDER="C:\SiliconLabs\SimplicityStudio\v5\developer\adapter_packs\commander\commander.exe"
+) else (
+  set COMMANDER=%PATH_SCMD%\commander.exe
+)
+
+set DEFAULT_INSTALL_CODE="83FED3407A939723A5C639B26916D505"
+
+cd %~dp0
+
+if not exist "%COMMANDER%" (
+  echo Error: Simplicity Commander not found.
+  pause
+  goto:eof
+)
+
+echo **********************************************************************
+echo Programming Installation Code...
+echo **********************************************************************
+
+%COMMANDER% flash --tokengroup znet --token "Install Code: !ERASE!"
+%COMMANDER% flash --tokengroup znet --token "Install Code:%DEFAULT_INSTALL_CODE%"
+%COMMANDER% tokendump --tokengroup znet --token TOKEN_MFG_INSTALLATION_CODE
+
+pause
+
+```
+Run the batch file via Command Prompt to flash the install code.
+
+## Summary
+
+You have now:
+
+- Configured a Coordinator (Light) and Router (Switch)
+- Created and flashed the firmware
+- Verified and programmed the Install Code for secure joining
+
+Proceed to the next section:  
+Sending On/Off Commands
+
