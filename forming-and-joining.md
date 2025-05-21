@@ -27,6 +27,8 @@ Install the following components:
 - `Zigbee 3.0 - Network Creator`
 - `Zigbee 3.0 - Network Creator Security`
 - `Services > CLI - Global Configuration`  → Set **Command Prompt name** to: `Light`
+-  `Zigbee - Common > Reporting`
+-  `Zigbee - Zigbee 3.0  > Find and Bind Target`
 
 ###  Step 3: Uninstall Unnecessary Components
 
@@ -41,7 +43,12 @@ Open **ZCL Configurator** and:
 
 - Edit the existing endpoint
 - Select: `HA On/Off Light (0x0100)`
-- Ensure all required clusters and attributes are included
+- Ensure all required clusters and attributes are installed properly
+
+ #### Configure the endpoint for sending the sensor data 
+
+ - In the Measurement and Sensing section enable the **Temperature Measurement** as **Server**
+ - Now Configure the attributes by enabling the reporting status 
 
 ###  Step 5: Build and Flash
 
@@ -72,6 +79,7 @@ Install the following components:
 - `Zigbee - Common > Reporting`
 - `Bluetooth - Application > Miscellaneous > Relative Humidity and Temperature Sensor`
 - `Zigbee - Zigbee 3.0  > Find and Bind Target`
+- `Platform - Button > Simple Button > Add two instances`
 
 ###  Step 3: Configure ZCL Endpoint
 
@@ -80,6 +88,11 @@ Open **ZCL Configurator** and:
 - Edit the endpoint
 - Select: `HA On/Off Switch (0x0000)`
 - Confirm component installation
+
+ #### Configure the endpoint for sending the sensor data 
+
+ - In the Measurement and Sensing section enable the **Temperature Measurement** as **Client**
+ - Now Configure the attributes by enabling the reporting status 
 
 ###  Step 4: Build and Flash
 
