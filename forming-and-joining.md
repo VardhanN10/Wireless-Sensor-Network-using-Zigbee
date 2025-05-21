@@ -274,5 +274,5 @@ You have now:
 - Verified and programmed the Install Code for secure joining
 
 #### Proceed to the next section:  
-- [ Sending On/Off Commands](./exchange-sensor-data.md)
+- [ Sending On/Off Commands](./exchanging-sensor-data.md)
 ---
