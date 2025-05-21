@@ -2,10 +2,9 @@
 
 This repository documents the creation of a **wireless sensor network** using **Zigbee protocol** on **EFR32MG12 boards** by Silicon Labs. The project demonstrates both **Centralized** and **Distributed architectures**, button-based interaction using On/Off commands, and **sensor data exchange through custom endpoints**.
 
-The project is modular, divided into 3 detailed sections:
+The project is modular, divided into 2 detailed sections:
 - [1️⃣ Forming and Joining the Network](./forming-and-joining.md)
-- [2️⃣ Sending On/Off Commands](./sending-onoff-commands.md)
-- [3️⃣ Exchanging Sensor Data](./exchanging-sensor-data.md)
+- [2️⃣ Exchanging Sensor Data](./exchanging-sensor-data.md)
 
 ---
 
@@ -43,26 +42,17 @@ The implementation is structured into three primary phases:
    → Configure one node as the **Coordinator (Light)** and the other as the **Router (Switch)**.  
    → Devices join the network, security keys are managed, and communication is established.
 
-2. **Sending On/Off Commands**  
+2. **Exchanging Sensor Data**
    → Use **physical buttons** to transmit **Zigbee On/Off commands** from the Router to the Coordinator.
-
-3. **Exchanging Sensor Data**  
    → Design **custom endpoints** and **Zigbee attributes** for sensor data.  
    → Nodes share data dynamically over the Zigbee network.
 
  Click into each section for full documentation:
 
 - [ Forming and Joining the Network](./forming-and-joining.md)
-- [ Sending On/Off Commands](./sending-onoff-commands.md)
 - [ Exchanging Sensor Data](./exchanging-sensor-data.md)
 
 ---
 
-##  Feedback
-
-Feel free to open an [Issue](https://github.com/yourusername/your-repo/issues) for bugs, suggestions, or improvements.  
-Pull Requests are welcome!
-
----
 
 
