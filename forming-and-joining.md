@@ -255,7 +255,7 @@ You have now:
 - Configured a Coordinator (Light) and Router (Switch)
 - Created and flashed the firmware
 - Verified and programmed the Install Code for secure joining
----
-Proceed to the next section:  
-[ Sending On/Off Commands](./sending-onoff-commands.md)
+
+#### Proceed to the next section:  
+- [ Sending On/Off Commands](./sending-onoff-commands.md)
 ---
