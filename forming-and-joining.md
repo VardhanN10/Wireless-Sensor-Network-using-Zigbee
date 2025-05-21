@@ -135,6 +135,118 @@ pause
 ```
 Run the batch file via Command Prompt to flash the install code.
 
+---
+
+## 🔐 Network Formation – Centralized (With and Without Security)
+
+After completing the initial setup of both Light (Coordinator) and Switch (Router) devices, you can now form a centralized Zigbee network in two ways:
+
+- ✅ **With Security** (Zigbee 3.0 standard-compliant, uses Install Codes and Link Keys)
+- 🔓 **Without Security** (faster setup, not recommended for production)
+
+---
+
+### 🔐 Forming a Centralized Network **With Security**
+
+####  Step 1: Derive Link Key from Install Code
+
+To allow a secure join, the Coordinator (Light) must know the install code of the joining device (Switch), and derive the **link key** from it.
+
+1. **Connect the Light (Coordinator) board via USB.**
+
+2. **Open the Serial Console 1** for the **Switch** device.
+
+3. **Get the EUI64 (physical address)** of the Switch by entering the following command:
+
+```bash
+info
+```
+Note the EUI64 shown in the output. It should look something like:
+```
+EUI64: 90 FD 9F FF FE 19 B1 FC
+```
+On the Coordinator (Light) console, use the following command to add the install code and derive the link key:
+```
+option install-code 0 {<Switch EUI64>} {<Install Code + CRC>}
+```
+ Replace placeholders with actual values. Here's an example:
+```
+option install-code 0 {90 FD 9F FF FE 19 B1 FC} {83 FE D3 40 7A 93 97 23 A5 C6 39 B2 69 16 D5 05 C3 B5}
+```
+Explanation:
+
+- 0 is the link key table index (can be any free index).
+
+- {EUI64} is the physical address of the joining node (Switch).
+
+- {Install Code + CRC} is the 16-byte install code plus 2-byte CRC.
+
+How to find the CRC:
+
+After running your install_code.bat file (from the earlier setup), it shows the derived key and CRC.
+
+The CRC is displayed in little-endian format — reverse the two bytes to use in the CLI.
+
+Example:
+
+CRC output: B5 C3 (little endian)
+
+Use as: C3 B5
+
+Verify the link key is added correctly by running on the Light (Coordinator):
+
+```
+keys print
+```
+You should see the transient key listed, e.g.:
+```
+Transient Key Table:
+66 B6 90 09 81 E1 EE 3C A4 20 6B 6B 86 1C 02 BB
+```
+#### Step 2: Form the Centralized Network
+On the Light (Coordinator):
+```
+plugin network-creator start 1
+```
+Then check the PAN ID of the network:
+```
+network id
+```
+#### Step 3: Open the Network to Allow Join
+Still on the Light, use this command to allow the Switch (Router) to join:
+```
+plugin network-creator-security open-with-key {<Switch EUI64>} {<Link Key>}
+```
+Example:
+```
+plugin network-creator-security open-with-key {90 FD 9F FF FE 19 B1 FC} {66 B6 90 09 81 E1 EE 3C A4 20 6B 6B 86 1C 02 BB}
+```
+#### Step 4: Join the Network on the Switch
+On the Switch (Router) console:
+```
+plugin network-steering start 0
+```
+If successful, the Switch will join the network and exchange keys with the Coordinator.
+
+ ### Forming a Centralized Network Without Security
+
+#### Step 1: Erase and Reset Devices (Optional but Recommended)
+Make sure old settings are erased. Re-flash the .s37 files and open Serial Console 1 for each device.
+
+#### Step 2: Form the Network (No Security)
+On the Light (Coordinator) console:
+```
+plugin network-creator form 1 0x1234 3 12
+plugin network-creator-security open-network
+```
+
+#### Step 3: Join the Network on the Switch
+On the Switch (Router) console:
+```
+plugin network-steering start 0
+```
+The Switch should now join the network without using install codes or keys.
+
 ## Summary
 
 You have now:
