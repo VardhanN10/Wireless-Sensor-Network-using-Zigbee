@@ -202,6 +202,8 @@ You should see the transient key listed, e.g.:
 Transient Key Table:
 66 B6 90 09 81 E1 EE 3C A4 20 6B 6B 86 1C 02 BB
 ```
+---
+
 ### Form the Centralized Network **With Security**
 ### On the Light (Coordinator):
 ```
@@ -226,7 +228,7 @@ On the Switch (Router) console:
 plugin network-steering start 0
 ```
 If successful, the Switch will join the network and exchange keys with the Coordinator.
-
+---
  ### Forming a Centralized Network Without Security
 
 #### Step 1: Erase and Reset Devices (Optional but Recommended)
@@ -245,7 +247,7 @@ On the Switch (Router) console:
 plugin network-steering start 0
 ```
 The Switch should now join the network without using install codes or keys.
-
+---
 ## Summary
 
 You have now:
@@ -253,7 +255,7 @@ You have now:
 - Configured a Coordinator (Light) and Router (Switch)
 - Created and flashed the firmware
 - Verified and programmed the Install Code for secure joining
-
+---
 Proceed to the next section:  
 [ Sending On/Off Commands](./sending-onoff-commands.md)
-
+---
