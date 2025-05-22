@@ -16,6 +16,8 @@ This project demonstrates:
 - Sending **On/Off commands** via hardware buttons on EFR32MG12 boards.
 - Creating and using **custom endpoints** for **sensor data exchange** between Zigbee nodes.
 
+  ![Zigbee Network Workflow ](images/workflow.png)
+
 It highlights network commissioning, device communication, and custom attribute design using the Silicon Labs Zigbee stack.
 
 ---
