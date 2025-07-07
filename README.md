@@ -2,9 +2,10 @@
 
 This repository documents the creation of a **wireless sensor network** using **Zigbee protocol** on **EFR32MG12 boards** by Silicon Labs. The project demonstrates both **Centralized** and **Distributed architectures**, button-based interaction using On/Off commands, and **sensor data exchange through custom endpoints**.
 
-The project is modular, divided into 2 detailed sections:
-- [1️⃣ Forming and Joining the Network](./forming-and-joining.md)
-- [2️⃣ Exchanging Sensor Data](./exchanging-sensor-data.md)
+The project is modular, divided into 3 detailed sections:
+- [Forming and Joining the Network](./forming-and-joining.md)
+- [Exchanging Sensor Data](./exchanging-sensor-data.md)
+- [Turing and EFR32 into a Thread/Zigbee Sniffer](./turning-EFR32-as-sniffer.md)
 
 ---
 
