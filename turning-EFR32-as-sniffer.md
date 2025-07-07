@@ -34,7 +34,7 @@ Navigate to the **Debug Adapters** view within Simplicity Studio.
 Right-click on the desired debug adapter and select **Sniffer Configurator**
 
 
-![Step 1](images/sniffer-step1.png)
+![Step 1](Documents/sniffer-step1.png)
 
 ---
 
@@ -42,7 +42,7 @@ Right-click on the desired debug adapter and select **Sniffer Configurator**
 
 In the dialog that appears, choose the debug adapter that you want to turn into a sniffer. Click *Next*
 
-![Step 2](images/sinffer-step2.png)
+![Step 2](Documents/sinffer-step2.png)
 
 ---
 
@@ -55,7 +55,7 @@ If this is your first time turning the board into a sniffer:
 - Then click *Next*
 
 
-![Step 3](images/sniffer-step3.png)
+![Step 3](Documents/sniffer-step3.png)
 
 ---
 
@@ -72,7 +72,7 @@ In the parameter configuration window:
 After configuration, click **Apply EFR32 sniffer Configuration** and *Finish*.
 
 
-![Step 4](images/sniffer-step4.png)
+![Step 4](Documents/sniffer-step4.png)
 
 ---
 
@@ -91,7 +91,7 @@ Now we will verify that the sniffer is functioning correctly by using two additi
 Start by setting up a Zigbee network on one of your boards configured as a **Zigbee Light** device.  
 After the network is formed, note the **channel number** being used.
 
-![Step 5](images/sniffer-step5.png)
+![Step 5](Documents/sniffer-step5.png)
 
 ---
 
@@ -102,7 +102,7 @@ To ensure the sniffer listens on the same channel:
 - Open **Launch Console** in Simplicity Studio.
 - Navigate to **Serial 1** of the sniffer board.
 
-![Launch Console Serial 1](images/sniffer-step6.png)
+![Launch Console Serial 1](Documents/sniffer-step6.png)
 
 Check if the sniffer is set to the same channel. If not, you can manually set the channel using the following command:
 
@@ -121,7 +121,7 @@ Return to the Network Analyzer and click **Start Capture**.
 You may notice a NWK Decryption Failed error when viewing traffic.
 -This occurs if the network security key is not yet known to the sniffer.
 
- ![Network Analyzer Data](images/sniffer-step7.png)
+ ![Network Analyzer Data](Documents/sniffer-step7.png)
 -To resolve this:
 
 On the Zigbee Light device, execute the following command to print security keys:
@@ -130,10 +130,10 @@ keys print
 ```
 - Copy the NWK Key from the output.
 
-  ![Newtwork Key](images/sniffer-step8.png)
+  ![Newtwork Key](Documents/sniffer-step8.png)
 
 - Paste it into the appropriate section of the Network Analyzer to enable proper decryption.
-![Adding NWK Key](images/sniffer-step9.png)
+![Adding NWK Key](Documents/sniffer-step9.png)
 
 ## Conclusion
 
