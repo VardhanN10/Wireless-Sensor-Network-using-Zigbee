@@ -6,14 +6,14 @@ This project demonstrates how to control a Philips Hue smart bulb using a custom
 
 Open **Simplicity Studio**, navigate to the Welcome view, and click on **Start**.
 
-*Insert image here*
+![Simplicty Studio](Documents/hue-1.png)
 
 ### Creating a New Project
 
 Create a new project using an existing minimal Zigbee example.
 
-*Insert image 1 here*  
-*Insert image 2 here*
+![Zigbee Minimal](Documents/hue-2.png)
+
 
 ---
 
@@ -25,7 +25,7 @@ To control a Hue bulb, we need both Light (to create and open the network) and S
 
 In the **Software Components**, enable the CLI and set the new prompt to `Controller`.
 
-*Insert image here*
+![CLI Global Configuration](Documents/hue-3.png)
 
 ### Step 2: Install Necessary Components
 
@@ -38,15 +38,14 @@ Install the following software components:
 - **Simple Button**, and add two instances: `btn0` and `btn1`
 - Configure the **Zigbee Device Configuration** as both **Coordinator** and **Router**
 
-*Insert image here*
+![Zigbee Device Configuration](Documents/hue-4.png)
 
 ---
 
 ## 3. ZCL Advanced Platform (ZAP) Configuration
 
 Open the ZAP tool and configure the Zigbee endpoints. Create a custom cluster to communicate with the Philips Hue light.
-
-*Insert image here*
+![ZAP Tool](Documents/hue-5.png)
 
 Save your changes and build the project. Flash the generated `.s37` file onto the device.
 
@@ -69,7 +68,7 @@ Save your changes and build the project. Flash the generated `.s37` file onto th
 
 4. After resetting, wait a few seconds. You should see a new device join the network in the Serial 1 console – this is the Hue bulb.
 
-*Insert image here*
+![HUE bulb joined the network](Documents/hue-6.png)
 
 5. Confirm the Hue bulb’s endpoints using the command: `zdo active <short_id>`
 
@@ -79,7 +78,7 @@ Example:`zdo active 0x6AF0`
 
 The console should show "Count 2" if the endpoints are detected correctly.
 
-*Insert image here*
+![End Points](Documents/hue-7.png)
 
 6. Control the light using ZCL commands:
 
