@@ -97,13 +97,72 @@ An alternative approach is to use the onboard buttons to control the bulb.
 ### Steps:
 
 1. Follow the same process to allow the Hue bulb to join the Zigbee network.
-2. Clone the controller code from the GitHub repository.
-3. Note the bulb’s short ID from the Serial 1 console.
-4. Update the code where `HUE_BULB_NODE_ID` is defined with the new short ID.
-5. Build and flash the project onto the board (without erasing).
-6. The bulb can now be controlled using physical button presses.
 
----
+2. Clone the controller code from the GitHub repository.
+
+   **Step 1:** Add the following variables to your code:
+
+   ```c
+   #define HUE_BULB_NODE_ID  0x6AF0
+   #define HUE_BULB_ENDPOINT 11 
+
+
+
+**Step 2: Replace the `sendMesssage` function with the below function.
+
+```c
+void sendMessage()
+{
+EmberStatus status;
+if (button0Pressed)
+  {
+    emberAfFillCommandOnOffClusterOn();
+    emberAfCorePrintln("Button0 is pressed");
+        emberAfCorePrintln("Command is zcl on-off ON");
+        emberAfSetCommandEndpoints(emberAfPrimaryEndpoint(), HUE_BULB_ENDPOINT);
+        status = emberAfSendCommandUnicast(EMBER_OUTGOING_DIRECT, HUE_BULB_NODE_ID);
+    status = emberAfSendCommandUnicast(EMBER_OUTGOING_DIRECT, 0x0000);
+    if (status == EMBER_SUCCESS)
+      {
+        emberAfCorePrintln("Command is successfully sent");
+      }
+    else
+      {
+        emberAfCorePrintln("Failed to send");
+        emberAfCorePrintln("Status code: 0x%x", status);
+      }
+    button0Pressed = false; // Resetting the Flag
+  }
+if (button1Pressed)
+  {
+    emberAfFillCommandOnOffClusterOff();
+       emberAfCorePrintln("Button1 is pressed");
+           emberAfCorePrintln("Command is zcl on-off Off");
+           emberAfSetCommandEndpoints(emberAfPrimaryEndpoint(), HUE_BULB_ENDPOINT);
+           status = emberAfSendCommandUnicast(EMBER_OUTGOING_DIRECT, HUE_BULB_NODE_ID);
+
+    status = emberAfSendCommandUnicast(EMBER_OUTGOING_DIRECT, 0x0000);
+    if (status == EMBER_SUCCESS)
+      {
+        emberAfCorePrintln("Command is successfully sent");
+      }
+    else
+      {
+        emberAfCorePrintln("Failed to send");
+        emberAfCorePrintln("Status code: 0x%x", status);
+      }
+    button1Pressed = false; // Resetting the Flag
+  }
+}
+````
+
+3. Note the bulb’s short ID from the Serial 1 console.
+
+4. Update the code where `HUE_BULB_NODE_ID` is defined with the new short ID.
+
+5. Build and flash the project onto the board (without erasing).
+
+6. The bulb can now be controlled using physical button presses.
 
 ## Summary
 
