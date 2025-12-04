@@ -45,15 +45,41 @@ void emberAfPluginNetworkSteeringCompleteCallback(EmberStatus status,
   sl_zigbee_app_debug_println("%s network %s: 0x%02X", "Join", "complete", status);
 }
 
-/** @brief
+/** @brief Radio needs calibrating.
  *
- * Application framework equivalent of ::emberRadioNeedsCalibratingHandler
+ * This callback is fired when the radio needs calibration. It is the 
+ * application framework equivalent of ::emberRadioNeedsCalibratingHandler.
+ * The application must calibrate the current channel to ensure optimal
+ * radio performance.
  */
 void emberAfRadioNeedsCalibratingCallback(void)
 {
   sl_mac_calibrate_current_channel();
 }
-
+/** @brief Post attribute change.
+ *
+ * This callback is fired after an attribute value has been changed. It allows
+ * the application to respond to attribute changes and perform actions based on
+ * the new attribute values.
+ *
+ * @param endpoint The endpoint on which the attribute change occurred. Ver.: always
+ *
+ * @param clusterId The cluster ID of the attribute that changed. Ver.: always
+ *
+ * @param attributeId The ID of the specific attribute that changed. Ver.: always
+ *
+ * @param mask Indicates whether the attribute is a client or server attribute
+ * (CLUSTER_MASK_CLIENT or CLUSTER_MASK_SERVER). Ver.: always
+ *
+ * @param manufacturerCode The manufacturer code associated with the attribute,
+ * or 0 if it is a standard ZCL attribute. Ver.: always
+ *
+ * @param type The data type of the attribute. Ver.: always
+ *
+ * @param size The size of the attribute value in bytes. Ver.: always
+ *
+ * @param value Pointer to the new attribute value. Ver.: always
+ */
 void emberAfPostAttributeChangeCallback(uint8_t endpoint,
                                         EmberAfClusterId clusterId,
                                         EmberAfAttributeId attributeId,
