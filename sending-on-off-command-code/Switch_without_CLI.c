@@ -88,14 +88,14 @@ void emberAfRadioNeedsCalibratingCallback(void)
 void sl_button_on_change(const sl_button_t *handle)
 {
   if (SL_SIMPLE_BUTTON_INSTANCE(BUTTON0) == handle){
-      if (sl_button_get_state(handle) == SL_SIMPLE_BUTTON_RELEASED){
-          button0Pressed = true;
-      }
+    if (sl_button_get_state(handle) == SL_SIMPLE_BUTTON_RELEASED){
+      button0Pressed = true;
+    }
   }
   if (SL_SIMPLE_BUTTON_INSTANCE(BUTTON1) == handle){
-      if (sl_button_get_state(handle) == SL_SIMPLE_BUTTON_RELEASED){
-          button1Pressed= true;
-      }
+    if (sl_button_get_state(handle) == SL_SIMPLE_BUTTON_RELEASED){
+      button1Pressed= true;
+    }
   }
 }
 
@@ -108,49 +108,48 @@ void sl_button_on_change(const sl_button_t *handle)
  */
 void sendMessage()
 {
-
   EmberStatus status;
 
   if (button0Pressed)
   {
-            // Trigger network join event in case we're not in a network yet
-            sl_zigbee_event_set_active(&joinNetwork); // Setting joinNetwork event active
-            
-            // Send ON command
-            emberAfFillCommandOnOffClusterOn();
-            emberAfCorePrintln("Button0 is pressed");
-            emberAfCorePrintln("Command is zcl on-off ON");
+    // Trigger network join event in case we're not in a network yet
+    sl_zigbee_event_set_active(&joinNetwork);
+    
+    // Send ON command
+    emberAfFillCommandOnOffClusterOn();
+    emberAfCorePrintln("Button0 is pressed");
+    emberAfCorePrintln("Command is zcl on-off ON");
 
-            emberAfSetCommandEndpoints(emberAfPrimaryEndpoint(), 1);
-            status = emberAfSendCommandUnicast(EMBER_OUTGOING_DIRECT, 0x0000);
+    emberAfSetCommandEndpoints(emberAfPrimaryEndpoint(), 1);
+    status = emberAfSendCommandUnicast(EMBER_OUTGOING_DIRECT, 0x0000);
 
-            if (status == EMBER_SUCCESS)
-            {
-                emberAfCorePrintln("Command is successfully sent");
-            }
-            else
-            {
-                emberAfCorePrintln("Failed to send");
-                emberAfCorePrintln("Status code: 0x%x", status);
-            }
+    if (status == EMBER_SUCCESS)
+    {
+      emberAfCorePrintln("Command is successfully sent");
+    }
+    else
+    {
+      emberAfCorePrintln("Failed to send");
+      emberAfCorePrintln("Status code: 0x%x", status);
+    }
 
-            button0Pressed = false; // Resetting the Flag
-        }
+    button0Pressed = false;
+  }
 
-if (button1Pressed)
+  if (button1Pressed)
   {
-      // Send OFF command
-      emberAfFillCommandOnOffClusterOff();
-      emberAfSetCommandEndpoints(emberAfPrimaryEndpoint(), 1);
-      emberAfCorePrintln("Sending Zigbee On Command...");
-      button1Pressed =false;
-      status = emberAfSendCommandUnicast(EMBER_OUTGOING_DIRECT, 0x0000);
+    // Send OFF command
+    emberAfFillCommandOnOffClusterOff();
+    emberAfSetCommandEndpoints(emberAfPrimaryEndpoint(), 1);
+    emberAfCorePrintln("Sending Zigbee On Command...");
+    button1Pressed = false;
+    status = emberAfSendCommandUnicast(EMBER_OUTGOING_DIRECT, 0x0000);
 
-      if (status == EMBER_SUCCESS) {
-          emberAfCorePrintln("Command Sent Successfully");
-      } else {
-          emberAfCorePrintln("Command Failed, Status: 0x%x", status);
-      }
+    if (status == EMBER_SUCCESS) {
+      emberAfCorePrintln("Command Sent Successfully");
+    } else {
+      emberAfCorePrintln("Command Failed, Status: 0x%x", status);
+    }
   }
 }
 
@@ -164,15 +163,14 @@ if (button1Pressed)
  */
 static void joinNetworkHandler(sl_zigbee_event_t *event)
 {
-    EmberNetworkStatus networkStatus = emberAfNetworkState();
-    if (networkStatus == EMBER_NO_NETWORK) {
-      emberAfCorePrintln("Starting Network Steering...");
-      EmberStatus status = emberAfPluginNetworkSteeringStart();
-      emberAfCorePrintln("emberAfPluginNetworkSteeringStart() -> 0x%02X", status);
-    } else {
-      emberAfCorePrintln("Already in a network(state:%u).", networkStatus);
-    }
-
+  EmberNetworkStatus networkStatus = emberAfNetworkState();
+  if (networkStatus == EMBER_NO_NETWORK) {
+    emberAfCorePrintln("Starting Network Steering...");
+    EmberStatus status = emberAfPluginNetworkSteeringStart();
+    emberAfCorePrintln("emberAfPluginNetworkSteeringStart() -> 0x%02X", status);
+  } else {
+    emberAfCorePrintln("Already in a network(state:%u).", networkStatus);
+  }
 }
 
 /** @brief Main application tick callback.
@@ -181,12 +179,12 @@ static void joinNetworkHandler(sl_zigbee_event_t *event)
  * and trigger the appropriate actions. Runs outside interrupt context so 
  * it's safe for network operations.
  */
-void emberAfMainTickCallback(void){
-
+void emberAfMainTickCallback(void)
+{
   if (button0Pressed || button1Pressed)
-    {
-      sendMessage();
-    }
+  {
+    sendMessage();
+  }
 }
 
 /** @brief Main initialization callback.
@@ -198,6 +196,6 @@ void emberAfMainTickCallback(void){
  */
 void emberAfMainInitCallback(void)
 {
-
   sl_zigbee_event_init(&joinNetwork, joinNetworkHandler);
 }
+
