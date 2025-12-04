@@ -1,6 +1,6 @@
 /***************************************************************************//**
  * @file app.c
- * @brief Callbacks implementation and application specific code.
+ * @brief Switch device that can join networks and send ON/OFF commands
  *******************************************************************************
  * # License
  * <b>Copyright 2021 Silicon Laboratories Inc. www.silabs.com</b>
@@ -21,52 +21,35 @@
 #include "app/framework/plugin/network-creator-security/network-creator-security.h"
 
 /*** Variables for Button Change Interrupts**/
-#define BUTTON0 0
-#define BUTTON1 1
+#define BUTTON0 0  // Button 0 triggers network join and sends ON command
+#define BUTTON1 1  // Button 1 sends OFF command
 volatile bool button0Pressed;
 volatile bool button1Pressed;
 /*********************/
 
-
-
 /** EVENT declare**/
-static sl_zigbee_event_t joinNetwork;
+static sl_zigbee_event_t joinNetwork;  // Event for joining network
 static void joinNetworkHandler(sl_zigbee_event_t *event);
 /*****/
 
-
-
 //*AUTO GEN CODE**//
-/** @brief Complete network steering.
+/** @brief Network steering completion callback.
  *
- * This callback is fired when the Network Steering plugin is complete.
+ * This gets called automatically when the network steering process finishes.
+ * Prints out detailed status including beacon count and join attempts to help
+ * with debugging network issues.
  *
- * @param status On success this will be set to EMBER_SUCCESS to indicate a
- * network was joined successfully. On failure this will be the status code of
- * the last join or scan attempt. Ver.: always
+ * @param status Shows if joining was successful (EMBER_SUCCESS) or what went 
+ * wrong if it failed. Ver.: always
  *
- * @param totalBeacons The total number of 802.15.4 beacons that were heard,
- * including beacons from different devices with the same PAN ID. Ver.: always
- * @param joinAttempts The number of join attempts that were made to get onto
- * an open Zigbee network. Ver.: always
+ * @param totalBeacons How many 802.15.4 beacons were detected during the scan,
+ * including beacons from other networks with the same PAN ID. Ver.: always
+ * 
+ * @param joinAttempts Number of times we tried to join a network. Ver.: always
  *
- * @param finalState The finishing state of the network steering process. From
- * this, one is able to tell on which channel mask and with which key the
- * process was complete. Ver.: always
+ * @param finalState The final state when steering completed - tells you which
+ * channel mask and key were used. Ver.: always
  */
-
-/** @brief
- *
- * Application framework equivalent of ::emberRadioNeedsCalibratingHandler
- */
-void emberAfRadioNeedsCalibratingCallback(void)
-{
-  sl_mac_calibrate_current_channel();
-}
-
-////AUTO GEN CODE- END/////////
-
-
 void emberAfPluginNetworkSteeringCompleteCallback(EmberStatus status,
                                                   uint8_t totalBeacons,
                                                   uint8_t joinAttempts,
@@ -81,6 +64,27 @@ void emberAfPluginNetworkSteeringCompleteCallback(EmberStatus status,
   }
 }
 
+/** @brief Radio calibration callback.
+ *
+ * Called when the radio needs to be recalibrated. We just calibrate the 
+ * current channel to keep things running smoothly.
+ */
+void emberAfRadioNeedsCalibratingCallback(void)
+{
+  sl_mac_calibrate_current_channel();
+}
+
+////AUTO GEN CODE- END/////////
+
+/** @brief Button state change callback.
+ *
+ * Called whenever a button is pressed or released. We set flags here when
+ * buttons are released. Button 0 both joins the network and sends ON commands,
+ * Button 1 sends OFF commands. We use flags instead of doing network operations
+ * directly since the SDK doesn't like that in interrupt context.
+ *
+ * @param handle Pointer to the button that changed state. Ver.: always
+ */
 void sl_button_on_change(const sl_button_t *handle)
 {
   if (SL_SIMPLE_BUTTON_INSTANCE(BUTTON0) == handle){
@@ -95,8 +99,13 @@ void sl_button_on_change(const sl_button_t *handle)
   }
 }
 
-
-
+/** @brief Handle button presses and send Zigbee commands.
+ *
+ * This gets called from the main tick callback when buttons are pressed.
+ * Button 0 triggers both network joining (via event) and sends an ON command.
+ * Button 1 sends an OFF command. Commands are sent via unicast to node 0x0000
+ * (the coordinator/Light device).
+ */
 void sendMessage()
 {
 
@@ -104,9 +113,10 @@ void sendMessage()
 
   if (button0Pressed)
   {
-
+            // Trigger network join event in case we're not in a network yet
             sl_zigbee_event_set_active(&joinNetwork); // Setting joinNetwork event active
-            // Sending On Command
+            
+            // Send ON command
             emberAfFillCommandOnOffClusterOn();
             emberAfCorePrintln("Button0 is pressed");
             emberAfCorePrintln("Command is zcl on-off ON");
@@ -129,7 +139,7 @@ void sendMessage()
 
 if (button1Pressed)
   {
-
+      // Send OFF command
       emberAfFillCommandOnOffClusterOff();
       emberAfSetCommandEndpoints(emberAfPrimaryEndpoint(), 1);
       emberAfCorePrintln("Sending Zigbee On Command...");
@@ -144,7 +154,14 @@ if (button1Pressed)
   }
 }
 
-
+/** @brief Network join event handler.
+ *
+ * This runs when the join network event is triggered (Button 0 pressed).
+ * Checks if we're already in a network - if not, it starts the network steering
+ * process to scan for and join an available network.
+ *
+ * @param event Pointer to the event that triggered this handler. Ver.: always
+ */
 static void joinNetworkHandler(sl_zigbee_event_t *event)
 {
     EmberNetworkStatus networkStatus = emberAfNetworkState();
@@ -158,7 +175,12 @@ static void joinNetworkHandler(sl_zigbee_event_t *event)
 
 }
 
-
+/** @brief Main application tick callback.
+ *
+ * Called repeatedly in the main loop. We use this to check button flags
+ * and trigger the appropriate actions. Runs outside interrupt context so 
+ * it's safe for network operations.
+ */
 void emberAfMainTickCallback(void){
 
   if (button0Pressed || button1Pressed)
@@ -167,17 +189,15 @@ void emberAfMainTickCallback(void){
     }
 }
 
-/**@breif Main Init Call Back
+/** @brief Main initialization callback.
  *
- * This function is called from the application's main function. It gives the application
- * a chance to do any initialization required at system startup. Any code that you would normally
- *  put into the top of the application's main() routine should be put into this function.
- *   This is called before the clusters, plugins, and the network are initialized so some functionality
- *    is not yet available.
+ * This function is called from the application's main function during startup.
+ * It gives us a chance to initialize anything we need before the network and
+ * plugins start up. Here we initialize the join network event and connect it
+ * to its handler function.
  */
 void emberAfMainInitCallback(void)
 {
 
   sl_zigbee_event_init(&joinNetwork, joinNetworkHandler);
 }
-
