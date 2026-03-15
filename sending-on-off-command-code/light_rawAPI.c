@@ -1,1 +1,123 @@
+#include "app/framework/include/af.h"
+#include "stack/include/network-formation.h"
+#include "sl_simple_led_instances.h"
+#include "sl_simple_led.h"
 
+#define LED_ON              0
+#define LED_OFF             1
+
+static sl_zigbee_event_t form_network_event;
+static void form_network_event_handler(sl_zigbee_event_t *event);
+static void permit_join(void);
+
+void emberAfRadioNeedsCalibratingCallback(void)
+{
+  sl_mac_calibrate_current_channel();
+}
+
+void emberAfMainInitCallback(void)
+{
+  emberAfCorePrintln("Coordinator MainInit Function");
+  sl_zigbee_event_init(&form_network_event, form_network_event_handler);
+  sl_zigbee_event_set_active(&form_network_event);
+}
+
+static void form_network_event_handler(sl_zigbee_event_t *event)
+{
+  sl_zigbee_event_set_inactive(event);
+
+  EmberNetworkStatus state = emberNetworkState();
+  emberAfCorePrintln("Network state: 0x%02X", state);
+
+  if (state == EMBER_JOINED_NETWORK) {
+    emberAfCorePrintln("Already on network");
+    emberLeaveNetwork();
+    emberAfCorePrintln("Left the network");
+    return;
+  }
+
+  if (state == EMBER_NO_NETWORK) {
+
+    EmberInitialSecurityState securityState;
+    memset(&securityState, 0, sizeof(EmberInitialSecurityState));
+    securityState.bitmask = EMBER_NO_SECURITY;
+    emberSetInitialSecurityState(&securityState);
+
+    EmberNetworkParameters parameters;
+    memset(&parameters, 0, sizeof(EmberNetworkParameters));
+    parameters.panId        = 0x1234;
+    parameters.radioChannel = 12;
+    parameters.radioTxPower = 0;
+
+    EmberStatus status = emberFormNetwork(&parameters);
+    emberAfCorePrintln("Form Network status: 0x%02X", status);
+  }
+}
+
+static void permit_join(void)
+{
+  EmberStatus status = emberPermitJoining(0xFF);
+  emberAfCorePrintln("Permit Joining status: 0x%02X", status);
+}
+
+void emberAfStackStatusCallback(EmberStatus status)
+{
+  if (status == EMBER_NETWORK_UP) {
+    emberAfCorePrintln("Network UP  NodeID=0x%2X  PAN=0x%2X  CH=%d",
+                       emberGetNodeId(),
+                       emberGetPanId(),
+                       emberGetRadioChannel());
+    permit_join();
+  }else if (status == EMBER_NETWORK_DOWN) {
+      emberAfCorePrintln("Network Down, reforming");
+      sl_zigbee_event_set_active(&form_network_event);
+    }
+  else {
+    emberAfCorePrintln("Stack status callback: 0x%02X", status);
+  }
+}
+
+void emberAfTrustCenterJoinCallback(EmberNodeId       newNodeId,
+                                    EmberEUI64        newNodeEui64,
+                                    EmberNodeId       parentOfNewNode,
+                                    EmberDeviceUpdate status,
+                                    EmberJoinDecision decision)
+{
+  emberAfCorePrintln("TC Join: node 0x%04X status 0x%02X decision 0x%02X",
+                     newNodeId, status, decision);
+}
+
+void emberAfChildJoinCallback(uint8_t       index,
+                              bool          joining,
+                              EmberNodeId   childId,
+                              EmberEUI64    childEui64,
+                              EmberNodeType childType)
+{
+  if (joining) {
+    emberAfCorePrintln("Child Joined  NodeID=0x%04X  index=%d", childId, index);
+
+    }
+   else {
+    emberAfCorePrintln("Child Left  NodeID=0x%04X  index=%d", childId, index);
+  }
+}
+
+void emberAfIncomingMessageCallback(EmberIncomingMessageType type,
+                                    EmberApsFrame *apsFrame,
+                                    EmberMessageBuffer message)
+{
+
+  uint8_t received = emberGetLinkedBuffersByte(message, 0);
+
+  emberAfCorePrintln("Message from 0x%04X value=%d",
+                     emberGetSender(),
+                     received);
+
+  if (received == LED_ON) {
+    emberAfCorePrintln("LED On");
+    sl_led_turn_on(&sl_led_led0);
+  } else if (received == LED_OFF) {
+    emberAfCorePrintln("LED Off");
+    sl_led_turn_off(&sl_led_led0);
+  }
+}
