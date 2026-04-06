@@ -3,12 +3,37 @@
 #include "sl_simple_led_instances.h"
 #include "sl_simple_led.h"
 
-#define LED_ON              0
-#define LED_OFF             1
+#define LED_ON   0
+#define LED_OFF  1
 
 static sl_zigbee_event_t form_network_event;
 static void form_network_event_handler(sl_zigbee_event_t *event);
 static void permit_join(void);
+
+
+static EmberAfAttributeMetadata coord_attribs[] = {
+  { 0xFFFD, ZCL_INT16U_ATTRIBUTE_TYPE, 2, ATTRIBUTE_MASK_SINGLETON, { (uint8_t *)3 } }
+};
+
+static EmberAfCluster coord_clusters[] = {
+  { 0x0006, coord_attribs, 1, 2, CLUSTER_MASK_SERVER, NULL }  /* On/Off server */
+};
+
+static EmberAfEndpointType coord_ep_type = {
+  coord_clusters, 1, 0
+};
+
+static void configure_endpoint(void)
+{
+  sli_zigbee_af_endpoints[0].endpoint      = 1;
+  sli_zigbee_af_endpoints[0].profileId     = 0x0104;          /* Home Automation */
+  sli_zigbee_af_endpoints[0].deviceId      = 0x0100;          /* On/Off Light    */
+  sli_zigbee_af_endpoints[0].deviceVersion = 0;
+  sli_zigbee_af_endpoints[0].endpointType  = &coord_ep_type;
+  sli_zigbee_af_endpoints[0].networkIndex  = 0;
+  sli_zigbee_af_endpoints[0].bitmask       = EMBER_AF_ENDPOINT_ENABLED;
+}
+
 
 void emberAfRadioNeedsCalibratingCallback(void)
 {
@@ -17,7 +42,8 @@ void emberAfRadioNeedsCalibratingCallback(void)
 
 void emberAfMainInitCallback(void)
 {
-  emberAfCorePrintln("Coordinator MainInit Function");
+  emberAfCorePrintln("Coordinator MainInit");
+  configure_endpoint();
   sl_zigbee_event_init(&form_network_event, form_network_event_handler);
   sl_zigbee_event_set_active(&form_network_event);
 }
@@ -30,14 +56,12 @@ static void form_network_event_handler(sl_zigbee_event_t *event)
   emberAfCorePrintln("Network state: 0x%02X", state);
 
   if (state == EMBER_JOINED_NETWORK) {
-    emberAfCorePrintln("Already on network");
+    emberAfCorePrintln("Already on network, leaving");
     emberLeaveNetwork();
-    emberAfCorePrintln("Left the network");
     return;
   }
 
   if (state == EMBER_NO_NETWORK) {
-
     EmberInitialSecurityState securityState;
     memset(&securityState, 0, sizeof(EmberInitialSecurityState));
     securityState.bitmask = EMBER_NO_SECURITY;
@@ -63,17 +87,16 @@ static void permit_join(void)
 void emberAfStackStatusCallback(EmberStatus status)
 {
   if (status == EMBER_NETWORK_UP) {
-    emberAfCorePrintln("Network UP  NodeID=0x%2X  PAN=0x%2X  CH=%d",
+    emberAfCorePrintln("Network UP  NodeID=0x%04X  PAN=0x%04X  CH=%d",
                        emberGetNodeId(),
                        emberGetPanId(),
                        emberGetRadioChannel());
     permit_join();
-  }else if (status == EMBER_NETWORK_DOWN) {
-      emberAfCorePrintln("Network Down, reforming");
-      sl_zigbee_event_set_active(&form_network_event);
-    }
-  else {
-    emberAfCorePrintln("Stack status callback: 0x%02X", status);
+  } else if (status == EMBER_NETWORK_DOWN) {
+    emberAfCorePrintln("Network Down, reforming");
+    sl_zigbee_event_set_active(&form_network_event);
+  } else {
+    emberAfCorePrintln("Stack status: 0x%02X", status);
   }
 }
 
@@ -83,7 +106,7 @@ void emberAfTrustCenterJoinCallback(EmberNodeId       newNodeId,
                                     EmberDeviceUpdate status,
                                     EmberJoinDecision decision)
 {
-  emberAfCorePrintln("TC Join: node 0x%04X status 0x%02X decision 0x%02X",
+  emberAfCorePrintln("TC Join: node=0x%04X  status=0x%02X  decision=0x%02X",
                      newNodeId, status, decision);
 }
 
@@ -95,22 +118,20 @@ void emberAfChildJoinCallback(uint8_t       index,
 {
   if (joining) {
     emberAfCorePrintln("Child Joined  NodeID=0x%04X  index=%d", childId, index);
-
-    }
-   else {
-    emberAfCorePrintln("Child Left  NodeID=0x%04X  index=%d", childId, index);
+  } else {
+    emberAfCorePrintln("Child Left    NodeID=0x%04X  index=%d", childId, index);
   }
 }
 
 void emberAfIncomingMessageCallback(EmberIncomingMessageType type,
-                                    EmberApsFrame *apsFrame,
-                                    EmberMessageBuffer message)
+                                    EmberApsFrame           *apsFrame,
+                                    EmberMessageBuffer       message)
 {
-
   uint8_t received = emberGetLinkedBuffersByte(message, 0);
 
-  emberAfCorePrintln("Message from 0x%04X value=%d",
+  emberAfCorePrintln("Message from 0x%04X  endpoint=%d  value=%d",
                      emberGetSender(),
+                     apsFrame->destinationEndpoint,
                      received);
 
   if (received == LED_ON) {
@@ -121,3 +142,4 @@ void emberAfIncomingMessageCallback(EmberIncomingMessageType type,
     sl_led_turn_off(&sl_led_led0);
   }
 }
+
